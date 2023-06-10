@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomExtraFieldDto {
     int orderId;
-    String firstCustomExtraField;
-    String secondCustomExtraField;
+    int customFieldId;
+    String content;
 }

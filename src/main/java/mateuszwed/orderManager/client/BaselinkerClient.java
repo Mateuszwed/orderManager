@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import mateuszwed.orderManager.dto.CustomExtraFieldDto;
 import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.exception.HttpClientException;
 import mateuszwed.orderManager.exception.HttpServerException;
@@ -34,9 +35,9 @@ public class BaselinkerClient {
 
     public ResponseEntity<OrderDto> getOrders(int statusId) {
         ResponseEntity<OrderDto> response;
-        String jsonParams = "";
         Map<String, Object> methodParams = new HashMap<>();
         methodParams.put("status_id", statusId);
+        String jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
@@ -48,6 +49,33 @@ public class BaselinkerClient {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders());
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, OrderDto.class);
+        } catch (HttpServerErrorException s) {
+            throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
+        } catch (HttpClientErrorException c){
+            throw new HttpClientException(c.getStatusCode(), "Wrong request to Baselinker API");
+        }
+        return ResponseEntity.ok(response.getBody());
+    }
+
+    public ResponseEntity<CustomExtraFieldDto> setCustomExtraField(CustomExtraFieldDto customExtraFieldDto){
+        ResponseEntity<CustomExtraFieldDto> response;
+        Map<String, Object> methodParams = new HashMap<>();
+        Map<Integer, String> field = new HashMap<>();
+        field.put(customExtraFieldDto.getCustomFieldId(), customExtraFieldDto.getContent());
+        methodParams.put("order_id", customExtraFieldDto.getOrderId());
+        methodParams.put("custom_extra_fields", field);
+        String jsonParams = "";
+        try {
+            jsonParams = convertMapToString(methodParams);
+        } catch (JsonProcessingFailureException e) {
+            e.printStackTrace();
+        }
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("method", "setOrderFields");
+        body.add("parameters", jsonParams);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders());
+        try {
+            response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, CustomExtraFieldDto.class);
         } catch (HttpServerErrorException s) {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
         } catch (HttpClientErrorException c){

@@ -1,5 +1,6 @@
 package mateuszwed.orderManager.controller;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,17 +17,21 @@ import org.springframework.web.bind.annotation.*;
 public class OrderManagerController {
     BaselinkerClient baselinkerClient;
 
+    @ApiOperation("Get orders from status")
     @GetMapping("/orders/{statusId}")
     public ResponseEntity<OrderDto> getOrders(@PathVariable int statusId){
         return baselinkerClient.getOrders(statusId);
     }
 
+    @ApiOperation("Set fields in orders")
     @PostMapping("/fields")
     public ResponseEntity<FieldDto> setField(@RequestBody FieldDto field){
         return ResponseEntity.ok(new FieldDto());
     }
+
+    @ApiOperation("Set custom extra fields in orders")
     @PostMapping("/customExtraFields")
-    public ResponseEntity<CustomExtraFieldDto> setCustomExtraField(@RequestBody CustomExtraFieldDto extraField){
-        return ResponseEntity.ok(new CustomExtraFieldDto());
+    public ResponseEntity<CustomExtraFieldDto> setCustomExtraField(@RequestBody CustomExtraFieldDto customExtraField){
+        return baselinkerClient.setCustomExtraField(customExtraField);
     }
 }
