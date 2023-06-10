@@ -15,7 +15,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDetailsDto {
     @JsonProperty("order_id")
-    String orderId;
+    int orderId;
     @JsonProperty("email")
     String emailAddress;
     @JsonProperty("delivery_country")
