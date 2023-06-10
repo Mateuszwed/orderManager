@@ -1,10 +1,9 @@
 package mateuszwed.orderManager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -12,7 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderDto {
-    String status;
-    List<OrderDetailsDto> orders;
+public class FieldDto {
+    int orderId;
+    String adminComment;
+    String firstExtraField;
+    String secondExtraField;
 }
