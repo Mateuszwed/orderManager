@@ -10,6 +10,7 @@ import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.exception.HttpClientException;
 import mateuszwed.orderManager.exception.HttpServerException;
 import mateuszwed.orderManager.exception.JsonProcessingFailureException;
+import mateuszwed.orderManager.exception.RestResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -53,6 +55,8 @@ public class BaselinkerClient {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
         } catch (HttpClientErrorException c){
             throw new HttpClientException(c.getStatusCode(), "Wrong request to Baselinker API");
+        } catch (RestClientException r) {
+            throw new RestResponseException("Server returned an HTML error page");
         }
         return ResponseEntity.ok(response.getBody());
     }
@@ -81,6 +85,8 @@ public class BaselinkerClient {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
         } catch (HttpClientErrorException c){
             throw new HttpClientException(c.getStatusCode(), "Wrong request to Baselinker API");
+        } catch (RestClientException r) {
+            throw new RestResponseException("Server returned an HTML error page");
         }
         return ResponseEntity.ok(response.getBody());
     }
@@ -101,4 +107,5 @@ public class BaselinkerClient {
         headers.set("X-BLToken", baselinkerToken);
         return headers;
     }
+
 }
