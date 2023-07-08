@@ -21,6 +21,6 @@ public class OrderDetailsDto {
     @JsonProperty("delivery_country")
     String delivery_country;
     @JsonProperty("user_comments")
-    String userComments;
+    String userComment;
     List<OrderProductDto> products;
 }

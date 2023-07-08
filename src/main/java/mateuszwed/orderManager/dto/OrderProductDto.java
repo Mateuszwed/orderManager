@@ -14,4 +14,5 @@ public class OrderProductDto {
     String name;
     String attributes;
     String sku;
+    int quantity;
 }

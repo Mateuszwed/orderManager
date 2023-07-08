@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import mateuszwed.orderManager.dto.CustomExtraFieldDto;
+import mateuszwed.orderManager.dto.FieldDto;
 import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.exception.HttpClientException;
 import mateuszwed.orderManager.exception.HttpServerException;
@@ -28,12 +28,12 @@ import java.util.Map;
 public class BaselinkerClient {
     final RestTemplate restTemplate;
     final ObjectMapper objectMapper;
-    @Value("${baselinker.api.token}")
-    String baselinkerToken;
+/*    @Value("${baselinker.api.token}")
+    String baselinkerToken;*/
     @Value("${baselinker.api.url}")
     String baselinkerUrl;
 
-    public ResponseEntity<OrderDto> getOrders(int statusId) {
+    public ResponseEntity<OrderDto> getOrders(int statusId, String baselinkerToken) {
         ResponseEntity<OrderDto> response;
         Map<String, Object> methodParams = new HashMap<>();
         methodParams.put("status_id", statusId);
@@ -46,7 +46,7 @@ public class BaselinkerClient {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("method", "getOrders");
         body.add("parameters", jsonParams);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders());
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, OrderDto.class);
         } catch (HttpServerErrorException s) {
@@ -57,13 +57,14 @@ public class BaselinkerClient {
         return ResponseEntity.ok(response.getBody());
     }
 
-    public ResponseEntity<CustomExtraFieldDto> setCustomExtraField(CustomExtraFieldDto customExtraFieldDto){
-        ResponseEntity<CustomExtraFieldDto> response;
+    public ResponseEntity<FieldDto> setField(FieldDto fieldDto, String baselinkerToken){
+        ResponseEntity<FieldDto> response;
         Map<String, Object> methodParams = new HashMap<>();
-        Map<Integer, String> field = new HashMap<>();
-        field.put(customExtraFieldDto.getCustomFieldId(), customExtraFieldDto.getContent());
-        methodParams.put("order_id", customExtraFieldDto.getOrderId());
-        methodParams.put("custom_extra_fields", field);
+        methodParams.put("order_id", fieldDto.getOrderId());
+        methodParams.put("admin_comments", fieldDto.getAdminComment());
+        methodParams.put("extra_field_1", fieldDto.getFirstExtraField());
+        methodParams.put("extra_field_2", fieldDto.getSecondExtraField());
+        methodParams.put("custom_extra_fields", fieldDto.getCustomExtraFields());
         String jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);
@@ -73,9 +74,9 @@ public class BaselinkerClient {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("method", "setOrderFields");
         body.add("parameters", jsonParams);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders());
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
-            response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, CustomExtraFieldDto.class);
+            response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, FieldDto.class);
         } catch (HttpServerErrorException s) {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
         } catch (HttpClientErrorException c){
@@ -94,7 +95,7 @@ public class BaselinkerClient {
         return jsonParams;
     }
     
-    private HttpHeaders getHttpHeaders() {
+    private HttpHeaders getHttpHeaders(String baselinkerToken) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("X-BLToken", baselinkerToken);
