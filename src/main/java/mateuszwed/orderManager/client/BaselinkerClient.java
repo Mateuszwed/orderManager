@@ -39,6 +39,7 @@ public class BaselinkerClient {
         ResponseEntity<OrderDto> response;
         Map<String, Object> methodParams = new HashMap<>();
         methodParams.put("status_id", statusId);
+        methodParams.put("include_custom_extra_fields", true);
         String jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);

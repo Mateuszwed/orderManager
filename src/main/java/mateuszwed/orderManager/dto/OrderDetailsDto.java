@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -22,5 +23,9 @@ public class OrderDetailsDto {
     String delivery_country;
     @JsonProperty("user_comments")
     String userComment;
+    @JsonProperty("extra_field_1")
+    String boxField;
+    @JsonProperty("custom_extra_fields")
+    Map<String,String> customFields;
     List<OrderProductDto> products;
 }
