@@ -1,9 +1,10 @@
 package mateuszwed.orderManager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -16,4 +17,5 @@ public class FieldDto {
     String adminComment;
     String firstExtraField;
     String secondExtraField;
+    Map<String, String> customExtraFields;
 }
