@@ -6,11 +6,12 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Map;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FieldDto {
     int orderId;

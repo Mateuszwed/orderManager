@@ -32,6 +32,7 @@ public class ProductService {
         shippingMethodRepository.save(shippingMethod);
         return productDto;
     }
+
     @Transactional
     public List<ShippingMethodDto> getAllProducts(){
         return shippingMapper.toDto(shippingMethodRepository.findAll());
