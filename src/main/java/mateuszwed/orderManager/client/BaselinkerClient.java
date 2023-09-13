@@ -30,8 +30,6 @@ import java.util.Map;
 public class BaselinkerClient {
     final RestTemplate restTemplate;
     final ObjectMapper objectMapper;
-/*    @Value("${baselinker.api.token}")
-    String baselinkerToken;*/
     @Value("${baselinker.api.url}")
     String baselinkerUrl;
 

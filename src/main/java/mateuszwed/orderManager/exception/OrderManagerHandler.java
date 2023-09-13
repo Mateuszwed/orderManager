@@ -1,7 +1,6 @@
 package mateuszwed.orderManager.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,5 +30,11 @@ public class OrderManagerHandler {
     public ResponseEntity<String> handleRestResponseException(RestResponseException e) {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body("Server returned an HTML error page");
+    }
+
+    @ExceptionHandler(value = ShippingMethodNoExistsException.class)
+    public ResponseEntity<String> handleShippingMethodNoExistsException(ShippingMethodNoExistsException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body("Shipping method with given ID not found");
     }
 }

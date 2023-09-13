@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ShippingMethodRepository extends JpaRepository<ShippingMethod, Integer> {
-    @Query("SELECT s FROM ShippingMethod s LEFT JOIN FETCH s.products p LEFT JOIN FETCH p.productPackaging")
+    @Query("SELECT DISTINCT s FROM ShippingMethod s LEFT JOIN FETCH s.products p LEFT JOIN FETCH p.productPackaging")
     List<ShippingMethod> findAll();
 }
