@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class ObjectMapperConfig {
     @Bean
     public ObjectMapper createObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        var objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         return objectMapper;
     }

@@ -11,6 +11,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class ShippingMethod {
@@ -22,8 +23,4 @@ public class ShippingMethod {
     @JoinColumn(name = "shipping_method")
     @JsonManagedReference
     List<Product> products;
-
-    public void addProduct(Product product){
-        products.add(product);
-    }
 }

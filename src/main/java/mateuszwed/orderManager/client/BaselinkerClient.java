@@ -35,19 +35,19 @@ public class BaselinkerClient {
 
     public ResponseEntity<OrderDto> getOrders(int statusId, String baselinkerToken) {
         ResponseEntity<OrderDto> response;
-        Map<String, Object> methodParams = new HashMap<>();
+        var methodParams = new HashMap<String, Object>();
         methodParams.put("status_id", statusId);
         methodParams.put("include_custom_extra_fields", true);
-        String jsonParams = "";
+        var jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
             e.printStackTrace();
         }
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        var body = new LinkedMultiValueMap<String, Object>();
         body.add("method", "getOrders");
         body.add("parameters", jsonParams);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
+        var requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, OrderDto.class);
         } catch (HttpServerErrorException s) {
@@ -62,19 +62,19 @@ public class BaselinkerClient {
 
     public ResponseEntity<FieldDto> setField(FieldDto fieldDto, String baselinkerToken){
         ResponseEntity<FieldDto> response;
-        Map<String, Object> methodParams = new HashMap<>();
+        var methodParams = new HashMap<String, Object>();
         methodParams.put("order_id", fieldDto.getOrderId());
         methodParams.put("admin_comments", fieldDto.getAdminComment());
         methodParams.put("extra_field_1", fieldDto.getFirstExtraField());
         methodParams.put("extra_field_2", fieldDto.getSecondExtraField());
         methodParams.put("custom_extra_fields", fieldDto.getCustomExtraFields());
-        String jsonParams = "";
+        var jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
             e.printStackTrace();
         }
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        var body = new LinkedMultiValueMap<String, Object>();
         body.add("method", "setOrderFields");
         body.add("parameters", jsonParams);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
@@ -106,5 +106,4 @@ public class BaselinkerClient {
         headers.set("X-BLToken", baselinkerToken);
         return headers;
     }
-
 }
