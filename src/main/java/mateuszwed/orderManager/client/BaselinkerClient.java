@@ -33,20 +33,16 @@ public class BaselinkerClient {
     @Value("${baselinker.api.url}")
     String baselinkerUrl;
 
-    public ResponseEntity<OrderDto> getOrders(int statusId, String baselinkerToken) {
+    public OrderDto getOrders(int statusId, String baselinkerToken) {
         ResponseEntity<OrderDto> response;
-        var methodParams = new HashMap<String, Object>();
-        methodParams.put("status_id", statusId);
-        methodParams.put("include_custom_extra_fields", true);
         var jsonParams = "";
+        var methodParams = createOrderRequestMethodParam(statusId);
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
             e.printStackTrace();
         }
-        var body = new LinkedMultiValueMap<String, Object>();
-        body.add("method", "getOrders");
-        body.add("parameters", jsonParams);
+        var body = createRequestBody("getOrders", jsonParams);
         var requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, OrderDto.class);
@@ -57,26 +53,19 @@ public class BaselinkerClient {
         } catch (RestClientException r) {
             throw new RestResponseException("Server returned an HTML error page");
         }
-        return ResponseEntity.ok(response.getBody());
+        return response.getBody();
     }
 
-    public ResponseEntity<FieldDto> setField(FieldDto fieldDto, String baselinkerToken){
+    public FieldDto setField(FieldDto fieldDto, String baselinkerToken){
         ResponseEntity<FieldDto> response;
-        var methodParams = new HashMap<String, Object>();
-        methodParams.put("order_id", fieldDto.getOrderId());
-        methodParams.put("admin_comments", fieldDto.getAdminComment());
-        methodParams.put("extra_field_1", fieldDto.getFirstExtraField());
-        methodParams.put("extra_field_2", fieldDto.getSecondExtraField());
-        methodParams.put("custom_extra_fields", fieldDto.getCustomExtraFields());
         var jsonParams = "";
+        var methodParams = createOrderFieldRequestMethodParam(fieldDto);
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
             e.printStackTrace();
         }
-        var body = new LinkedMultiValueMap<String, Object>();
-        body.add("method", "setOrderFields");
-        body.add("parameters", jsonParams);
+        var body = createRequestBody("setOrderFields", jsonParams);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, FieldDto.class);
@@ -87,7 +76,7 @@ public class BaselinkerClient {
         } catch (RestClientException r) {
             throw new RestResponseException("Server returned an HTML error page");
         }
-        return ResponseEntity.ok(response.getBody());
+        return response.getBody();
     }
     
     private String convertMapToString(Map<String,Object> params) throws JsonProcessingFailureException {
@@ -101,9 +90,37 @@ public class BaselinkerClient {
     }
     
     private HttpHeaders getHttpHeaders(String baselinkerToken) {
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.set("X-BLToken", baselinkerToken);
-        return headers;
+        return new HttpHeaders() {
+            {
+                setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                set("X-BLToken", baselinkerToken);
+            }};
+    }
+
+    private HashMap<String, Object> createOrderRequestMethodParam(int statusId){
+        return new HashMap<>() {
+            {
+                put("status_id", statusId);
+                put("include_custom_extra_fields", true);
+            }};
+    }
+
+    private LinkedMultiValueMap<String, Object> createRequestBody(String method ,String jsonParams) {
+        return new LinkedMultiValueMap<>() {
+            {
+                add("method", method);
+                add("parameters", jsonParams);
+            }};
+    }
+
+    private HashMap<String, Object> createOrderFieldRequestMethodParam(FieldDto fieldDto) {
+        return new HashMap<>() {
+            {
+                put("order_id", fieldDto.getOrderId());
+                put("admin_comments", fieldDto.getAdminComment());
+                put("extra_field_1", fieldDto.getFirstExtraField());
+                put("extra_field_2", fieldDto.getSecondExtraField());
+                put("custom_extra_fields", fieldDto.getCustomExtraFields());
+            }};
     }
 }

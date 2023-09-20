@@ -1,11 +1,9 @@
 package mateuszwed.orderManager.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mateuszwed.orderManager.dto.OrderDetailsDto;
 import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.dto.OrderProductDto;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,48 +13,48 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class BaselinkerClientTest {
-    @Mock
+    @Mock()
     RestTemplate restTemplate;
     @Mock
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @InjectMocks
     BaselinkerClient baselinkerClient;
 
     @Test
-    void  methodGetResponseFromBaselinkerShouldBeReturnListOfOrdersAndStatusCode200() throws JsonProcessingException {
+    void methodGetResponseFromBaselinkerShouldBeReturnListOfOrdersAndStatusCode200() {
         //given
-        var orderDto = createSimpleOrderDto();
+        OrderDto orderDto = createSimpleOrderDto();
         var responseEntity = new ResponseEntity<>(orderDto, HttpStatus.OK);
-        when(objectMapper.writeValueAsString(anyString())).thenReturn()
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class)))
                 .thenReturn(responseEntity);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "https://mock-url.com");
 
         //when
-        var result = baselinkerClient.getOrders(1, "test").getBody();
+        OrderDto response = baselinkerClient.getOrders(1, "testToken");
 
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getStatus()).isEqualTo("GLS");
-        //assertThat(result.get(0).getMid()).isEqualTo(new BigDecimal("3.5"));
-        //verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderDto.class));
+        //then
+        assertNotNull(response);
+        assertEquals(orderDto, response);
+        assertThat(response).isEqualTo(orderDto);
+        assertThat(response.getOrders().get(0).getDelivery_country()).isEqualTo("Poland");
+        assertThat(response.getOrders().get(1).getDelivery_country()).isEqualTo("German");
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class));
     }
-
 
     private OrderDto createSimpleOrderDto() {
         return OrderDto.builder()
