@@ -11,6 +11,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class ShippingMethod {
@@ -18,16 +19,8 @@ public class ShippingMethod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
-/*    @OneToMany(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "shipping_method")
-    List<Product> products;*/
     @OneToMany(cascade = CascadeType.MERGE)
     @JoinColumn(name = "shipping_method")
     @JsonManagedReference
     List<Product> products;
-
-
-    public void addProduct(Product product){
-        products.add(product);
-    }
 }

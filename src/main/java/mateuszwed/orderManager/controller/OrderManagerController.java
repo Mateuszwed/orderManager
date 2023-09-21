@@ -20,12 +20,11 @@ public class OrderManagerController {
     @ApiOperation("Get orders from status")
     @GetMapping("/{statusId}")
     public ResponseEntity<OrderDto> getOrders(@RequestHeader("X-BLToken") String token, @PathVariable int statusId){
-        return baselinkerClient.getOrders(statusId, token);
+        return ResponseEntity.ok(baselinkerClient.getOrders(statusId, token));
     }
-
     @ApiOperation("Set fields in orders")
     @PostMapping("/fields")
     public ResponseEntity<FieldDto> setField(@RequestHeader("X-BLToken") String token, @RequestBody FieldDto field){
-        return baselinkerClient.setField(field, token);
+        return ResponseEntity.ok(baselinkerClient.setField(field, token));
     }
 }
