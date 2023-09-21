@@ -22,7 +22,6 @@ public class OrderManagerController {
     public ResponseEntity<OrderDto> getOrders(@RequestHeader("X-BLToken") String token, @PathVariable int statusId){
         return ResponseEntity.ok(baselinkerClient.getOrders(statusId, token));
     }
-
     @ApiOperation("Set fields in orders")
     @PostMapping("/fields")
     public ResponseEntity<FieldDto> setField(@RequestHeader("X-BLToken") String token, @RequestBody FieldDto field){

@@ -1,6 +1,7 @@
 package mateuszwed.orderManager.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mateuszwed.orderManager.dto.FieldDto;
 import mateuszwed.orderManager.dto.OrderDetailsDto;
 import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.dto.OrderProductDto;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -22,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,14 +40,14 @@ class BaselinkerClientTest {
     @Test
     void methodGetResponseFromBaselinkerShouldBeReturnListOfOrdersAndStatusCode200() {
         //given
-        OrderDto orderDto = createSimpleOrderDto();
+        var orderDto = createSimpleOrderDto();
         var responseEntity = new ResponseEntity<>(orderDto, HttpStatus.OK);
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class)))
                 .thenReturn(responseEntity);
-        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "https://mock-url.com");
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
 
         //when
-        OrderDto response = baselinkerClient.getOrders(1, "testToken");
+        var response = baselinkerClient.getOrders(1, "testToken");
 
         //then
         assertNotNull(response);
@@ -54,6 +56,81 @@ class BaselinkerClientTest {
         assertThat(response.getOrders().get(0).getDelivery_country()).isEqualTo("Poland");
         assertThat(response.getOrders().get(1).getDelivery_country()).isEqualTo("German");
         verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class));
+    }
+
+    @Test
+    void wrongUrlToClientInGetOrdersShouldBeReturnThrowHttpExceptionWithStatusCode404() {
+        // given
+        var httpClientErrorException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class)))
+                .thenThrow(httpClientErrorException);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
+
+        // when, then
+        assertThrows(HttpClientErrorException.class, () -> baselinkerClient.getOrders(1,"token"));
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class));
+    }
+
+    @Test
+    void wrongDataFromServerInGetOrdersShouldBeReturnThrowHttpExceptionWithStatusCode500() {
+        // given
+        var httpServerErrorException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class)))
+                .thenThrow(httpServerErrorException);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
+
+        // when, then
+        assertThrows(HttpServerErrorException.class, () -> baselinkerClient.getOrders(1,"token"));
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class));
+    }
+
+    @Test
+    void methodShouldBePostRequestToBaselinkerAndShouldBeReturnStatusCode200() {
+        //given
+        var fieldDto = createSimpleFieldDto();
+        var responseEntity = new ResponseEntity<>(fieldDto, HttpStatus.OK);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class)))
+                .thenReturn(responseEntity);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
+
+        //when
+        var response = baselinkerClient.setField(fieldDto, "testToken");
+
+        //then
+        assertNotNull(response);
+        assertEquals(fieldDto, response);
+        assertThat(response).isEqualTo(fieldDto);
+        assertThat(response.getAdminComment()).isEqualTo("admin comments");
+        assertThat(response.getOrderId()).isEqualTo(1);
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class));
+    }
+
+    @Test
+    void wrongUrlToClientInSetFieldShouldBeReturnThrowHttpExceptionWithStatusCode404() {
+        // given
+        var fieldDto = createSimpleFieldDto();
+        var httpClientErrorException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class)))
+                .thenThrow(httpClientErrorException);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
+
+        // when, then
+        assertThrows(HttpClientErrorException.class, () -> baselinkerClient.setField(fieldDto,"token"));
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class));
+    }
+
+    @Test
+    void wrongDataFromServerInSetFieldShouldBeReturnThrowHttpExceptionWithStatusCode500() {
+        // given
+        var fieldDto = new FieldDto();
+        var httpServerErrorException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class)))
+                .thenThrow(httpServerErrorException);
+        ReflectionTestUtils.setField(baselinkerClient, "baselinkerUrl", "http://url.com");
+
+        // when, then
+        assertThrows(HttpServerErrorException.class, () -> baselinkerClient.setField(fieldDto,"token"));
+        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class));
     }
 
     private OrderDto createSimpleOrderDto() {
@@ -110,5 +187,23 @@ class BaselinkerClientTest {
         productList.add(orderProductDto);
         productList.add(orderProductDto2);
         return productList;
+    }
+
+    private FieldDto createSimpleFieldDto() {
+        return FieldDto.builder()
+                .orderId(1)
+                .adminComment("admin comments")
+                .firstExtraField("(k0 - 0 / k1 - 0 / k2 - 0 / k3 - 0 / k4 - 1)")
+                .secondExtraField("size")
+                .customExtraFields(createSimpleCustomExtraFieldDto())
+                .build();
+    }
+
+    private HashMap<String, String> createSimpleCustomExtraFieldDto() {
+        return new HashMap<>() {
+            {
+                put("38352", "COMPANY1 - 1 - COMPANY2 - 0 - COMPANY3 - 0");
+                put("38872", "(W1 - 1 - W2 - 0 - W3 - 0)");
+            }};
     }
 }
