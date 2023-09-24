@@ -26,7 +26,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
-    @ApiOperation("Add product to shipping method")
+    @ApiOperation("Add products to shipping method")
     @PostMapping("/{id}")
     public ResponseEntity<ProductDto> addProduct(@PathVariable int id, @RequestBody ProductDto productDto) {
         return ResponseEntity.ok(productService.addProduct(productDto,id));
