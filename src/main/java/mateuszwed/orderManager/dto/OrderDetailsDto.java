@@ -17,16 +17,18 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDetailsDto {
     @JsonProperty("order_id")
-    int orderId;
+    String orderId;
     @JsonProperty("email")
     String emailAddress;
     @JsonProperty("delivery_country")
-    String delivery_country;
+    String deliveryCountry;
     @JsonProperty("user_comments")
     String userComment;
+    @JsonProperty("admin_comments")
+    String adminComments;
     @JsonProperty("extra_field_1")
     String boxField;
     @JsonProperty("custom_extra_fields")
-    Map<String,String> customFields;
+    Map<String, String> customFields;
     List<OrderProductDto> products;
 }

@@ -6,15 +6,9 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderProductDto {
-    String name;
-    String attributes;
-    String sku;
-    int quantity;
-    double weight;
+public class FieldResponse {
+    private String status;
 }

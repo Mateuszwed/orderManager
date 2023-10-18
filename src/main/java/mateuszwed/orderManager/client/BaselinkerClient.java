@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import mateuszwed.orderManager.dto.CustomExtraFieldDto;
 import mateuszwed.orderManager.dto.FieldDto;
+import mateuszwed.orderManager.dto.FieldResponse;
 import mateuszwed.orderManager.dto.OrderDto;
 import mateuszwed.orderManager.exception.HttpClientException;
 import mateuszwed.orderManager.exception.HttpServerException;
@@ -48,7 +50,7 @@ public class BaselinkerClient {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, OrderDto.class);
         } catch (HttpServerErrorException s) {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
-        } catch (HttpClientErrorException c){
+        } catch (HttpClientErrorException c) {
             throw new HttpClientException(c.getStatusCode(), "Wrong request to Baselinker API");
         } catch (RestClientException r) {
             throw new RestResponseException("Server returned an HTML error page");
@@ -56,8 +58,8 @@ public class BaselinkerClient {
         return response.getBody();
     }
 
-    public FieldDto setField(FieldDto fieldDto, String baselinkerToken){
-        ResponseEntity<FieldDto> response;
+    public FieldResponse setField(FieldDto fieldDto, String baselinkerToken){
+        ResponseEntity<FieldResponse> response;
         var jsonParams = "";
         var methodParams = createOrderFieldRequestMethodParam(fieldDto);
         try {
@@ -68,7 +70,7 @@ public class BaselinkerClient {
         var body = createRequestBody("setOrderFields", jsonParams);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
         try {
-            response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, FieldDto.class);
+            response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, FieldResponse.class);
         } catch (HttpServerErrorException s) {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
         } catch (HttpClientErrorException c){
@@ -114,13 +116,17 @@ public class BaselinkerClient {
     }
 
     private HashMap<String, Object> createOrderFieldRequestMethodParam(FieldDto fieldDto) {
+        Map<String, String> customExtraFieldsMap = new HashMap<>();
+        for (CustomExtraFieldDto customField : fieldDto.getCustomExtraFields()) {
+            customExtraFieldsMap.put(customField.getFieldId(), customField.getFieldContent());
+        }
+
         return new HashMap<>() {
             {
                 put("order_id", fieldDto.getOrderId());
                 put("admin_comments", fieldDto.getAdminComment());
                 put("extra_field_1", fieldDto.getFirstExtraField());
-                put("extra_field_2", fieldDto.getSecondExtraField());
-                put("custom_extra_fields", fieldDto.getCustomExtraFields());
+                put("custom_extra_fields", customExtraFieldsMap);
             }};
     }
 }

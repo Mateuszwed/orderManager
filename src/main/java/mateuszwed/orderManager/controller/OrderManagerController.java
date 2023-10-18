@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import mateuszwed.orderManager.client.BaselinkerClient;
 import mateuszwed.orderManager.dto.FieldDto;
+import mateuszwed.orderManager.dto.FieldResponse;
 import mateuszwed.orderManager.dto.OrderDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class OrderManagerController {
     }
     @ApiOperation("Set fields in orders")
     @PostMapping("/fields")
-    public ResponseEntity<FieldDto> setField(@RequestHeader("X-BLToken") String token, @RequestBody FieldDto field){
+    public ResponseEntity<FieldResponse> setField(@RequestHeader("X-BLToken") String token, @RequestBody FieldDto field){
         return ResponseEntity.ok(baselinkerClient.setField(field, token));
     }
 }
