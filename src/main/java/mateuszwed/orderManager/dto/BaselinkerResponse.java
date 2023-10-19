@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FieldResponse {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class BaselinkerResponse {
     private String status;
 }
