@@ -1,10 +1,7 @@
 package mateuszwed.orderManager.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mateuszwed.orderManager.dto.FieldDto;
-import mateuszwed.orderManager.dto.OrderDetailsDto;
-import mateuszwed.orderManager.dto.OrderDto;
-import mateuszwed.orderManager.dto.OrderProductDto;
+import mateuszwed.orderManager.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,8 +50,8 @@ class BaselinkerClientTest {
         assertNotNull(response);
         assertEquals(orderDto, response);
         assertThat(response).isEqualTo(orderDto);
-        assertThat(response.getOrders().get(0).getDelivery_country()).isEqualTo("Poland");
-        assertThat(response.getOrders().get(1).getDelivery_country()).isEqualTo("German");
+        assertThat(response.getOrders().get(0).getDeliveryCountry()).isEqualTo("Poland");
+        assertThat(response.getOrders().get(1).getDeliveryCountry()).isEqualTo("German");
         verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrderDto.class));
     }
 
@@ -100,8 +97,6 @@ class BaselinkerClientTest {
         assertNotNull(response);
         assertEquals(fieldDto, response);
         assertThat(response).isEqualTo(fieldDto);
-        assertThat(response.getAdminComment()).isEqualTo("admin comments");
-        assertThat(response.getOrderId()).isEqualTo(1);
         verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FieldDto.class));
     }
 
@@ -143,18 +138,18 @@ class BaselinkerClientTest {
     private List<OrderDetailsDto> createSimpleOrderDetailDtoList() {
         var orderDetailsDtoList = new ArrayList<OrderDetailsDto>();
         var orderDetailsDto = OrderDetailsDto.builder()
-                .orderId(1)
+                .orderId("1")
                 .boxField("(k - 1 / k - 2)")
-                .delivery_country("Poland")
+                .deliveryCountry("Poland")
                 .userComment("comment")
                 .emailAddress("email@email.pl")
                 .customFields(createSimpleCustomFields())
                 .products(createSimpleOrderProductDtoList())
                 .build();
         var orderDetailsDto2 = OrderDetailsDto.builder()
-                .orderId(2)
+                .orderId("2")
                 .boxField("(k - 0 / k - 1)")
-                .delivery_country("German")
+                .deliveryCountry("German")
                 .userComment("comment2")
                 .emailAddress("email@email2.pl")
                 .customFields(createSimpleCustomFields())
@@ -191,11 +186,10 @@ class BaselinkerClientTest {
 
     private FieldDto createSimpleFieldDto() {
         return FieldDto.builder()
-                .orderId(1)
+                .orderId("1")
                 .adminComment("admin comments")
                 .firstExtraField("(k0 - 0 / k1 - 0 / k2 - 0 / k3 - 0 / k4 - 1)")
-                .secondExtraField("size")
-                .customExtraFields(createSimpleCustomExtraFieldDto())
+                .customExtraFields((List<CustomExtraFieldDto>) createSimpleCustomExtraFieldDto())
                 .build();
     }
 

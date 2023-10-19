@@ -8,7 +8,7 @@
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet id="1" author="mateuszwed">
-        <createTable tableName="shipping_methods">
+        <createTable tableName="shipping_method">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

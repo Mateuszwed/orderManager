@@ -20,4 +20,7 @@ public class Box {
     int id;
     String boxType;
     int quantity;
+    @ManyToOne
+    @JoinColumn(name = "product_packaging_id")
+    ProductPackaging productPackaging;
 }

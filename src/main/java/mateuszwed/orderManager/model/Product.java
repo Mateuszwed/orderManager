@@ -21,6 +21,7 @@ public class Product {
     @ManyToOne(cascade = CascadeType.ALL)
     ProductPackaging productPackaging;
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shipping_method_id")
     @JsonBackReference
     ShippingMethod shippingMethod;
 }

@@ -8,14 +8,14 @@
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet id="5" author="mateuszwed">
-        <createTable tableName="bags">
+        <createTable tableName="bag">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="bag_type" type="varchar(255)"/>
             <column name="quantity" type="int"/>
             <column name="product_packaging_id" type="bigint">
-                <constraints nullable="true" foreignKeyName="fk_bags_product_packaging" referencedTableName="product_packagings" referencedColumnNames="id"/>
+                <constraints nullable="true" foreignKeyName="fk_bag_product_packaging" referencedTableName="product_packaging" referencedColumnNames="id"/>
             </column>
         </createTable>
     </changeSet>

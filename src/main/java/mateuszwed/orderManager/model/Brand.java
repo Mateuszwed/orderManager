@@ -19,4 +19,7 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     int quantity;
+    @ManyToOne
+    @JoinColumn(name = "product_packaging_id")
+    ProductPackaging productPackaging;
 }

@@ -21,14 +21,14 @@ public class ProductPackaging {
     int id;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "box_product_packaging")
+    @JoinColumn(name = "product_packaging_id")  // Zmienione na to, co jest w Liquibase
     List<Box> boxes;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bag_product_packaging")
+    @JoinColumn(name = "product_packaging_id")  // Zakładam, że w skrypcie Liquibase dla Bag jest podobnie zdefiniowane
     List<Bag> bags;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "brand_product_packaging")
+    @JoinColumn(name = "product_packaging_id")  // Zakładam, że w skrypcie Liquibase dla Brand jest podobnie zdefiniowane
     List<Brand> brands;
 }

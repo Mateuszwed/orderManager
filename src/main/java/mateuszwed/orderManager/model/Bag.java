@@ -20,4 +20,7 @@ public class Bag {
     int id;
     String bagType;
     int quantity;
+    @ManyToOne
+    @JoinColumn(name = "product_packaging_id")
+    ProductPackaging productPackaging;
 }

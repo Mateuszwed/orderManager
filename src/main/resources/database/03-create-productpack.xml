@@ -8,7 +8,7 @@
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet id="3" author="mateuszwed">
-        <createTable tableName="product_packagings">
+        <createTable tableName="product_packaging">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

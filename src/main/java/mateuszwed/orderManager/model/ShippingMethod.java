@@ -19,8 +19,7 @@ public class ShippingMethod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
-    @OneToMany(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "shipping_method")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "shippingMethod")
     @JsonManagedReference
     List<Product> products;
 }
