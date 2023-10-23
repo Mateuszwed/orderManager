@@ -19,7 +19,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -64,7 +63,7 @@ public class BaselinkerClient {
             e.printStackTrace();
         }
         var body = createRequestBody("setOrderFields", jsonParams);
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, getHttpHeaders(baselinkerToken));
+        var requestEntity = new HttpEntity<MultiValueMap<String, Object>>(body, getHttpHeaders(baselinkerToken));
         try {
             response = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, BaselinkerResponse.class);
         } catch (HttpServerErrorException s) {
@@ -78,14 +77,14 @@ public class BaselinkerClient {
     }
 
     public BaselinkerResponse setDelivery(DeliveryDto deliveryDto, String baselinkerToken) {
-        HttpHeaders headers = getHttpHeaders(baselinkerToken);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        var headers = getHttpHeaders(baselinkerToken);
+        var body = new LinkedMultiValueMap<String, Object>();
         body.add("method", "createPackage");
-        Map<String, Object> methodParams = new HashMap<>();
+        var methodParams = new HashMap<String, Object>();
         methodParams.put("order_id", deliveryDto.getOrderId());
         methodParams.put("courier_code", deliveryDto.getCourierCode());
-        List<Map<String, Object>> fields = new ArrayList<>();
-        List<Map<String, Object>> packages = new ArrayList<>();
+        var fields = new ArrayList<Map<String, Object>>();
+        var packages = new ArrayList<Map<String, Object>>();
         if ("pocztapolska".equalsIgnoreCase(deliveryDto.getCourierCode())) {
             for (Map.Entry<String, Object> entry : deliveryDto.getCustomFields().entrySet()) {
                 fields.add(createDeliveryField(entry.getKey(), entry.getValue()));
@@ -101,7 +100,7 @@ public class BaselinkerClient {
         }
         methodParams.put("fields", fields);
         methodParams.put("packages", packages);
-        String jsonParams = "";
+        var jsonParams = "";
         try {
             jsonParams = convertMapToString(methodParams);
         } catch (JsonProcessingFailureException e) {
@@ -109,8 +108,8 @@ public class BaselinkerClient {
         }
         body.add("parameters", jsonParams);
         try {
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            ResponseEntity<BaselinkerResponse> responseEntity = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, BaselinkerResponse.class);
+            var requestEntity = new HttpEntity<MultiValueMap<String, Object>>(body, headers);
+            var responseEntity = restTemplate.exchange(baselinkerUrl, HttpMethod.POST, requestEntity, BaselinkerResponse.class);
             return responseEntity.getBody();
         } catch (HttpServerErrorException s) {
             throw new HttpServerException(s.getStatusCode(), "Problem with call to Baselinker API");
@@ -122,7 +121,7 @@ public class BaselinkerClient {
     }
 
     private String convertMapToString(Map<String,Object> params) throws JsonProcessingFailureException {
-        String jsonParams;
+        var jsonParams = "";
         try {
             jsonParams = objectMapper.writeValueAsString(params);
         } catch (JsonProcessingException e) {
@@ -164,7 +163,7 @@ public class BaselinkerClient {
     }
 
     private HashMap<String, Object> createOrderFieldRequestMethodParam(FieldDto fieldDto) {
-        Map<String, String> customExtraFieldsMap = new HashMap<>();
+        var customExtraFieldsMap = new HashMap<String, String>();
         for (CustomExtraFieldDto customField : fieldDto.getCustomExtraFields()) {
             customExtraFieldsMap.put(customField.getFieldId(), customField.getFieldContent());
         }

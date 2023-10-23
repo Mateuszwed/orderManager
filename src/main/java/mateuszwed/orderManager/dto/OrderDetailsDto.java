@@ -18,6 +18,8 @@ import java.util.Map;
 public class OrderDetailsDto {
     @JsonProperty("order_id")
     String orderId;
+    @JsonProperty("user_login")
+    String userLogin;
     @JsonProperty("email")
     String emailAddress;
     @JsonProperty("delivery_country")
